@@ -38,22 +38,37 @@ class KeyboardListener(QThread):
     def __init__(self):
         super().__init__()
         self.lastPress = 0
-        self.pressCount = 0
+        self.isCtrlPressed = False
+        self.isCtrlRelease = False
+
 
     def run(self):
+
         def keyHandler(key):
             if key in [keyboard.Key.ctrl_l, keyboard.Key.ctrl_r]:
-                now = time.time()
-                if now - self.lastPress < 0.3:
-                    self.pressCount += 1
-                    if self.pressCount >= 2:
-                        self.toggleSignal.emit()
-                        self.pressCount = 0
-                else:
-                    self.pressCount = 1
-                self.lastPress = now
+                if not self.isCtrlPressed:
+                    self.isCtrlPressed = True
+                    self.lastPress = time.time()
+                    return
 
-        with keyboard.Listener(on_press=keyHandler) as listener:
+                if time.time() - self.lastPress < 0.3:
+                    if self.isCtrlRelease and self.isCtrlPressed:
+                        self.toggleSignal.emit()
+                        self.isCtrlRelease = False
+                        self.isCtrlPressed = False
+                else:
+                    self.isCtrlRelease = False
+                    self.isCtrlPressed = False
+            
+            else:
+                self.isCtrlRelease = False
+                self.isCtrlPressed = False
+
+        def setCtrlRelease(key):
+            if key in [keyboard.Key.ctrl_l, keyboard.Key.ctrl_r] and self.isCtrlPressed:
+                self.isCtrlRelease = True
+
+        with keyboard.Listener(on_press=keyHandler, on_release=setCtrlRelease) as listener:
             listener.join()
 
 
