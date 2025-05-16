@@ -9,6 +9,6 @@ This is an application used on Windows to find the position of the mouse. By pre
 
 The original intention of making this was to achieve the purpose of finding the position of the mouse. However, the function of Microsoft's Power Toys is too large. I only wanted to use this one function of his, so I carried out a replication and implementation
 
-###2025/5/16日
+### 2025/5/16日
 1. 修复长按Ctrl或在涉及其他Ctrl组合键时导致的误触
    Fixed accidental touches caused by long-pressing Ctrl or involving other Ctrl key combinations
